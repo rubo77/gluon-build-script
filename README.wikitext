@@ -9,74 +9,131 @@ Wenn du kein Linux verwendest, du dich nicht mit Linux auskennst oder dir einfac
 '''Hier findest du eine Anleitung wenn du [[Freifunk_Nord/Einen Knoten einrichten|Einen Knoten einrichten]] möchtest.'''
 
 == Kompilieren von Gluon ==
-Um Gluon zu kompilieren installiert man die benötigten Pakete mit:
-<pre>sudo apt-get install git make gcc g++ unzip libncurses5-dev zlib1g-dev subversion gawk bzip2 libssl-dev</pre>
-Diese Pakete werden benötigt, um nachher die Toolchain und die Firmware an sich zu kompilieren. Des weitern sollten min. 7 GB je Target an freiem Speicher auf der Festplatte verfügbar sein. Bei aktuell 7 möglichen Targets sollten bis zu 49 GB an Platz eingeplant werden
 
-Hinweis: Wer sein gluon Verzeichnis von der Festplatte gelöscht hat, der kann an dieser Stelle fortsetzen.<br>
-Nun lädt man sich die Source-Files für Gluon aus dem GitHub-Repository von Freifunk Lübeck herunter:
-<pre>git clone https://github.com/freifunk-gluon/gluon.git</pre>
-Wichtig hierbei ist, dass man sich die Dateien '''NICHT''' als root und auch '''ohne''' sudo herunterlädt, da es sonst später zu Problemen beim Kompilieren kommen kann.<br>
+: # Um Gluon zu kompilieren installiert man die benötigten Pakete
 
-Als nächstes wechselt man in das automatisch erstellte Verzeichnis mit:<pre>cd gluon</pre> hinein<br>
+ sudo apt-get install git make gcc g++ unzip libncurses5-dev zlib1g-dev subversion gawk bzip2 libssl-dev
 
-Bevor man mit dem Kompilieren beginnen kann ist der richtige Versionszweig englisch revision branch auszuwählen.
-mit <pre>git branch -a</pre> kann man Versionen anzeigen lassen und dann mit <pre>git checkout v2015.1.x</pre> die gerade aktuelle stabile Version 2015.1.x auswählen.
-Wer hier nichts auswählt landet in dem experimentellen Zweig und riskiert dass das Kompilieren fehlschlägt.<br>
-Eine Anleitung wie der Gluon Master erfolgreich gebaut werden kann ist weiter unten zu finden.<br>
-Wer bisher versucht hat eine experimentelle Version von Gluon zu bauen (gemäß der bisherigen Fassung dieser Anleitung) und auf den stabilen Zweig umsteigen möchte, <br>
-der sollte sein gluon Verzeichnis auf der Festplatte rekursiv, also inclusive aller Unterverzeichnisse, löschen und neu auschecken also Gluon neu vom Freifunk Lübeck rerunterladen.
+: # Diese Pakete werden benötigt, um nachher die Toolchain und die Firmware an sich zu kompilieren. Des weitern sollten mind. 7 GB je Target an freiem Speicher auf der Festplatte verfügbar sein. Bei aktuell 7 möglichen Targets '''sollten bis zu 49 GB an Platz eingeplant werden'''. Man kann den Freien Speicher im aktuellen Verzeichnis anzeigen mit
 
-Da in diesem Repository noch keine Konfiguration dabei ist, muss diese extra heruntergeladen werden. Hierzu führt man in dem Verzeichnis gluon, wo man sich an dieser Stelle der Anleitung schon befinden sollte, folgenden Befehl aus:
-<pre>git clone https://github.com/ffnord/site-nord.git site</pre>
+ df -BG .
 
-Auch hier ist sicherheitshalber der richtige Branch auszuwählen.
-dazu gibt man: <pre>cd site</pre> ein gefolgt von: <pre>git branch -a</pre> und wählt den richtigen Zweig aus mit: <pre>git checkout master</pre> aus um die Version 0.7.2 zu bauen.
-danach ist noch ein <pre>cd ..</pre> erforderlich, um aus dem site Verzeichnis in das übergeordnete Verzeichnis gluon zurückzukehren.
+: # '''Hinweis:''' Wer sein gluon Verzeichnis von der Festplatte gelöscht hat, der kann an dieser Stelle fortsetzen.<br>
+: # Nun lädt man sich die Source-Files für Gluon aus dem GitHub-Repository von Freifunk Lübeck herunter:
 
-Nun sind fast alle Dateien vorhanden, um mit dem Kompilieren zu beginnen. Die letzten Dateien erhält man mit dem Befehl
-<pre>make update</pre>
-und startet das Kompilieren mit:
-<pre>make</pre> 
-Wer ein anderes Target als ar71xx-generic kompilieren möchte muss dieses seperat mit dem Parameter GLUON_TARGET= angeben<br/>
-Eine Liste der vorhandenen Targets gibt es mit 
-<pre>make GLUON_TARGET=?</pre>
-Seit Gluon Version 2014.4.x kann auch beim ersten Build der Paramiter -j siehe weiter unten zur Steigerung der Geschwindigkeit des Kompilierens genutzt werden.<br>
-Es werden nur die gerade kompilierten Dateien angezeigt.<br>
+ git clone https://github.com/freifunk-gluon/gluon.git
 
-Wer am Ende wissen möchte warum das Kompilieren fehlschlägt oder zuschauen möchte was im einzelnen passiert der benutzt
-<pre>make V=s bzw. make -jX V=s X ist Platzhalter für eine Zahl</pre>
+: # Wichtig hierbei ist, dass man sich die Dateien '''NICHT''' als root und auch '''ohne''' sudo herunterlädt, da es sonst später zu Problemen beim Kompilieren kommen kann:
+<pre>
+if [[ $EUID -eq 0 ]]; then echo "cannot be run as root"; exit; fi;
+</pre>
+: # Als nächstes wechselt man in das automatisch erstellte Verzeichnis
 
-Für den Fall, dass du einen CPU mit mehreren Kernen verwendest kannst du hinter "make" die Option "-jX" setzen, wobei X der Anzahl der Kerne deines CPU entspricht. Durch diese Zusatzoption arbeiten mehr Kerne am Kompilieren des Codes und es geht schneller als nur mit einem. Wenn man auf einem Server über SSH kompiliert, ist es zu empfehlen das ganze in einer screen, tmux o.ä. Sitzung auszuführen. Das komplette Kompilieren dauert ca. 2 Stunden mit einem Kern, bei einem i7-2600k mit der Option "-j8" nur kanpp 30 Minuten. Also sollte man sich einen Kaffee, eine Mate oder sonst etwas holen und warten.
+ cd gluon
 
-Sobald das Kompilieren ohne Fehler abgeschlossen ist, findet man die Images im gluon-Ordner unter
-<pre>images/factory/</pre>
+: # Bevor man mit dem Kompilieren beginnen kann ist der richtige Versionszweig (branch, englisch revision) auszuwählen.
 
-== Kompilieren des Gluon Master Branch (aktuell experimental 2015.2) nur für Experten die wissen was sie tuen<br/> ==
-Hierzu ist im wesentlichen die Anleitung der stable Version zu befolgen mit folgenden Änderungen:<br/>
-Der Branch von Gluon ist nicht v2015.1x sondern master <br/>
-Der Branch für die FFNord site Dateien ist nicht master sondern 2015.2.x <br/>
-Dieser Branch wird ersetzt wenn die fertige Version veröffentlicht wird <br/>
-Das Ergebnis des Kompiliervorgangs liegt unter ./output/images <br/>
-Der Sinn den Master Branch zu Bauen und die experimentelle Version 2015.2 zu testen liegt darin,<br/> 
-dass die Router eine neue Statussseite erhalten haben.<br/>
-Ausserdem wurde die Anzahl der supporteten Router erhöht.<br/>
-Wer dieses Feature nutzen möchte kompiliert am Besten mit dem BROKEN=1 Parameter
-Dann wird zum Beispiel auch der ARCER C5/C7 experimentell unterstützt
+: # Verfügbare Versionszweige anzeigen
+
+ git branch -a
+
+: # z.B. die z.Z. aktuelle stabile Version: 2015.1.x auswählen
+
+  git checkout v2015.1.x
+
+: # Wer hier nichts auswählt landet in dem '''experimentellen Zweig master''' und riskiert, dass das Kompilieren fehlschlägt.
+: # (Eine Anleitung wie der Gluon Master erfolgreich gebaut werden kann ist weiter unten zu finden.)
+: # Wer bisher versucht hat eine experimentelle Version von Gluon zu bauen (gemäß der bisherigen Fassung dieser Anleitung) und auf den stabilen Zweig umsteigen möchte, der sollte sein gluon Verzeichnis auf der Festplatte rekursiv, also inclusive aller Unterverzeichnisse, löschen und neu auschecken also Gluon neu von github.com/freifunk-gluon rerunterladen.
+
+: # Da in diesem Repository noch keine Konfiguration dabei ist, muss diese extra heruntergeladen werden. Hierzu führt man in dem Verzeichnis gluon, wo man sich an dieser Stelle der Anleitung schon befinden sollte, folgenden Befehl aus:
+
+ git clone https://github.com/ffnord/site-nord.git site
+
+: # Auch hier sicherheitshalber noch darauf achten, den richtigen Zweig auszuwählen.
+
+ cd site
+ git branch -a
+ 
+: #  wähle den richtigen Zweig aus, z.B. 'master' um die Version 0.7.2 zu bauen
+ 
+ git checkout master
+
+: # (Die Version steht in der Variable ''DEFAULT_GLUON_RELEASE'' in der Datei ''site.mk'')
+: # Dann in das übergeordnete Verzeichnis gluon zurückkehren
+
+ cd ..
+
+: # Nun sind fast alle Dateien vorhanden, um mit dem Kompilieren zu beginnen. Die letzten Dateien erhält man mit dem Befehl
+
+ make update
+
+: # Dies dauert nur ca eine Minute. 
+
+: # Nun startet man das Kompilieren
+
+ make
+ 
+: # Wer ein anderes Target als ''ar71xx-generic'' kompilieren möchte muss dieses seperat mit dem Parameter ''GLUON_TARGET=...'' angeben
+: # Eine Liste der vorhandenen Targets gibt es mit 
+
+ make GLUON_TARGET=?
+
+: # Seit Gluon Version 2014.4.x kann auch beim ersten Build der Paramiter -j siehe weiter unten zur Steigerung der Geschwindigkeit des Kompilierens genutzt werden.
+: # Es werden nur die gerade kompilierten Dateien angezeigt.
+
+: # Wer am Ende wissen möchte warum das Kompilieren fehlschlägt oder zuschauen möchte was im einzelnen passiert der benutzt
+
+ make V=s
+
+: # Für den Fall, dass du einen Prozessor mit mehreren Kernen verwendest kannst du hinter "make" die Option "-jX" setzen, wobei X der Anzahl der Kerne deines Prozessors entspricht. Durch diese Zusatzoption arbeiten mehr Kerne am Kompilieren des Codes und es geht schneller als nur mit einem. Wenn man auf einem Server über SSH kompiliert, ist es zu empfehlen das ganze in einer screen, tmux o.ä. Sitzung auszuführen. Das komplette Kompilieren dauert '''ca. 2 Stunden mit einem Kern''', bei einem i7-2600k mit der Option "-j8", also '''mit 8 Kernen nur kanpp 30 Minuten'''.
+
+: # Die Anzahl Kerne zeigt der Befehl ''lscpu'' an, man kann dies automatisch in eine Variable setzen und dann den make Befehl ausführen
+
+ X=$(lscpu|grep -e '^CPU(s):'|xargs|cut -d" " -f2)
+ make -j$X V=s
+
+: # Nun kann man sich einen Kaffee, eine Mate oder sonst etwas holen, ein paar Dehnübungen machen und warten.
+
+: # Sobald das Kompilieren ohne Fehler abgeschlossen ist, findet man die Images im gluon-Ordner unter
+
+ images/factory/
+
+
+== Kompilieren des Gluon Master Branch (aktuell experimental 2015.2) ==
+===nur für Experten die wissen was sie tun ===
+
+Hierzu ist im wesentlichen die Anleitung der stable Version zu befolgen mit folgenden Änderungen:
+
+# Der Branch von Gluon ist nicht v2015.1x sondern master
+# Der Branch für die FFNord site Dateien ist nicht master sondern 2015.2.x<br>Dieser Branch wird ersetzt, wenn die fertige Version veröffentlicht wird 
+# Das Ergebnis des Kompiliervorgangs liegt unter ''./output/images''
+
+Der Sinn den Master Branch zu Bauen und die experimentelle Version 2015.2 zu testen liegt darin, dass die Router eine neue Statussseite erhalten haben. Ausserdem wurde die Anzahl der supporteten Router erhöht.
+
+Wer dieses Feature nutzen möchte kompiliert am Besten mit dem ''BROKEN=1'' Parameter
+Dann wird zum Beispiel auch der ARCER C5/C7 experimentell unterstützt.
+
 Der Aufruf des kompilierungsvorgangs lautet dann 
-<pre>make -j8 BROKEN=1 </pre>
-<b>Warnung Das Bauen des Master Branches ist nur Linux Experten zu empfehlen.<br/> 
+
+ make -j8 BROKEN=1 
+
+<b>Warnung: Das Bauen des Master Branches ist nur Linux Experten zu empfehlen.<br/> 
 Es kann nicht garantiert werden dass das Kompilieren erfolgreich verläuft da an dem Master Branch ständig gearbeitet wird.</b>
 
 ==Signieren von Images==
+
 Wenn man die Gluon-Images für automatische Updates signieren möchte muss man zuerst eine Manifest-Datei erzeugen, in der die Signaturen enthalten sein werden. Wichtig hierzu ist, dass auf dem System die [[ECDSA Util|ECDSA Utils]] vorhanden sind.
 
 Um die Manifest-Datei zu erzeugen gehen wir in das Gluon Verzeichnis und führen dort den folgenden Befehl aus:
-<pre>make manifest GLUON_BRANCH=stable</pre>
+
+ make manifest GLUON_BRANCH=stable
+
 Nun finden wir unter images/sysupgrade eine Datei mit dem Namen "stable.manifest".
 
 Nun müssen wir nur noch den script zum signieren der Images ausführen. Die Befehlsreihenfolge ist die folgende:
-<pre>./contrib/sign.sh pfad/zur/secret/key/datei pfad/zur/manifest/datei></pre>
+
+ ./contrib/sign.sh pfad/zur/secret/key/datei pfad/zur/manifest/datei>
+
 
 == Links ==
 
