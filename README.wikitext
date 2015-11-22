@@ -10,6 +10,16 @@ Wenn du kein Linux verwendest, du dich nicht mit Linux auskennst oder dir einfac
 
 == Kompilieren von Gluon ==
 
+===TODO===
+in NOrdlippe gibt es noch:
+
+https://wiki.freifunk.net/Freifunk_Nordlippe_Firmware
+
+make dirclean 
+
+ make -j$X GLUON_BRANCH=experimental
+
+
 : # Um Gluon zu kompilieren installiert man die benötigten Pakete
 
  sudo apt-get install git make gcc g++ unzip libncurses5-dev zlib1g-dev subversion gawk bzip2 libssl-dev
@@ -69,7 +79,9 @@ if [[ $EUID -eq 0 ]]; then echo "cannot be run as root"; exit; fi;
 
 : # Dies dauert nur ca eine Minute. 
 
-: # Nun startet man das Kompilieren
+: # Am besten die Starzeit merken und dann das Kompilieren starten
+
+ START=$(date)
 
  make
  
@@ -92,12 +104,15 @@ if [[ $EUID -eq 0 ]]; then echo "cannot be run as root"; exit; fi;
  X=$(lscpu|grep -e '^CPU(s):'|xargs|cut -d" " -f2)
  make -j$X V=s
 
-: # Nun kann man sich einen Kaffee, eine Mate oder sonst etwas holen, ein paar Dehnübungen machen und warten.
+: # Nun kann man sich einen Kaffee, eine Mate oder sonst etwas holen, ein paar Dehnübungen machen und warten bis man sich die Kompilierdauer anschauen kann
+
+ date
+ echo "Kompiliervorgang abgeschlossen"
+ echo "begonnen um $START"
 
 : # Sobald das Kompilieren ohne Fehler abgeschlossen ist, findet man die Images im gluon-Ordner unter
 
  images/factory/
-
 
 == Kompilieren des Gluon Master Branch (aktuell experimental 2015.2) ==
 ===nur für Experten die wissen was sie tun ===
