@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# builds all 7 targets for gluon
+# builds all 7 targets for gluon (disk space needed: ~ 7 GB each)
 #
 # Install:
 #
@@ -46,8 +46,7 @@ logfiles: $LOGFILE\*"
 echo $MESSAGE
 
 set -x
-#for ARCH in ar71xx-generic ar71xx-nand mpc85xx-generic x86-generic x86-kvm_guest x86-64 x86-xen_domu; do
-for ARCH in ar71xx-generic x86-generic mpc85xx-generic; do
+for ARCH in ar71xx-generic x86-generic mpc85xx-generic ar71xx-nand x86-kvm_guest x86-64 x86-xen_domu; do
   trap ": user abort; exit;" SIGINT SIGTERM # so CTRL+C will exit the loop
   echo "################# $(date) start building target $ARCH ###########################" >> $LOGFILE
   make -j$CORES GLUON_TARGET=$ARCH $OPTIONS V=s || exit 1
