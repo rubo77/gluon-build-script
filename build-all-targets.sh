@@ -16,7 +16,7 @@
 # Configuration
 
 # version for your build
-VERSION=0.8~exp$(date '+%Y%m%d%H%M')
+VERSION=216.1.1~exp$(date '+%Y%m%d%H%M')
 
 # Folder to deploy the built images
 ARCHIVE=/var/www/freifunk/firmware/ffki
@@ -38,7 +38,7 @@ CORES=$(lscpu|grep -e '^CPU(s):'|xargs|cut -d" " -f2)
 # ensure archive folder exists for this version
 mkdir -p $ARCHIVE/$VERSION
 
-MESSAGE= "When done, move images into archive with
+MESSAGE="When done, move images into archive with
 rsync -a --info=progress2 output/images/ $ARCHIVE/$VERSION/
 rm -Rf output/images
 
