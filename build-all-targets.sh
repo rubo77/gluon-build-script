@@ -16,7 +16,7 @@
 # Configuration
 
 # version for your build
-VERSION=216.1.1~exp$(date '+%Y%m%d%H%M')
+VERSION=2016.5.1~exp$(date '+%Y%m%d%H%M')
 
 # Folder to deploy the built images
 ARCHIVE=/var/www/freifunk/firmware/ffki
@@ -33,7 +33,8 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 # detect amount of CPU cores
-CORES=$(lscpu|grep -e '^CPU(s):'|xargs|cut -d" " -f2)
+#CORES=$(lscpu|grep -e '^CPU(s):'|xargs|cut -d" " -f2)
+CORES=1
 
 # ensure archive folder exists for this version
 mkdir -p $ARCHIVE/$VERSION
@@ -45,15 +46,24 @@ rm -Rf output/images
 logfiles: $LOGFILE\*"
 echo $MESSAGE
 
+start_timestamp=$(date +%s)
+i=0
 set -x
 for ARCH in ar71xx-generic x86-generic mpc85xx-generic ar71xx-nand x86-kvm_guest x86-64 x86-xen_domu; do
+  start[$i]=$(date +%s)
   trap ": user abort; exit;" SIGINT SIGTERM # so CTRL+C will exit the loop
   echo "################# $(date) start building target $ARCH ###########################" >> $LOGFILE
   make -j$CORES GLUON_TARGET=$ARCH $OPTIONS V=s || exit 1
   # TODO: gzip successfull build before continuing with next target
+  echo "Zeit seit Start: "$((($(date +%s)-$start_timestamp)/60))":"$((($(date +%s)-$start_timestamp)%60))" Minuten"
+  M="Zeit $TARGET: "$((($(date +%s)-$start[$i])/60))":"$((($(date +%s)-$start[$i])%60))" Minuten"
+  MESSAGE=$MESSAGE" "$M
+  let i++
 done && : "all targets created in folder output/images/"
 set +x
+echo -n "finished: "; date
 
 echo "################# $(date) finished script ###########################" >> $LOGFILE
 cat $LOGFILE
 echo $MESSAGE
+
