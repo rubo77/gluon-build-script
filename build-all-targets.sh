@@ -27,7 +27,7 @@ LOGFILE=/tmp/gluon-build-log-$VERSION
 BUILD_BROKEN="BROKEN=1"
 # or BUILD_BROKEN=""
 T="ar71xx-generic ar71xx-tiny ar71xx-nand brcm2708-bcm2708 brcm2708-bcm2709 mpc85xx-generic ramips-mt7621 sunxi-cortexa7 x86-generic x86-geode x86-64 ipq40xx ramips-mt7620 ramips-mt76x8 ramips-rt305x"
-if [ $BROKEN -ne "" ] ; then
+if [ $BROKEN != "" ] ; then
   T="$T ar71xx-mikrotik brcm2708-bcm2710 ipq806x mvebu-cortexa9"
 fi
 
