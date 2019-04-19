@@ -54,16 +54,15 @@ logfiles: $LOGFILE\*"
 echo $MESSAGE
 
 start_timestamp=$(date +%s)
-i=0
 set -x
 for TARGET in $T; do
-  start[$i]=$(date +%s)
+  start=$(date +%s)
   trap ": user abort; exit;" SIGINT SIGTERM # so CTRL+C will exit the loop
   echo "################# $(date) start building target $TARGET ###########################" >> $LOGFILE
   make -j$CORES GLUON_TARGET=$TARGET $OPTIONS V=s || exit 1
   # TODO: gzip successfull build before continuing with next target
   echo "Zeit seit Start: "$((($(date +%s)-$start_timestamp)/60))":"$((($(date +%s)-$start_timestamp)%60))" Minuten"
-  M="Zeit $TARGET: "$((($(date +%s)-$start[$i])/60))":"$((($(date +%s)-$start[$i])%60))" Minuten"
+  M="Zeit $TARGET: "$((($(date +%s)-$start)/60))":"$((($(date +%s)-$start)%60))" Minuten"
   MESSAGE=$MESSAGE" "$M
   let i++
 done && : "all targets created in folder output/images/"
